@@ -1,11 +1,12 @@
-import { Link } from "react-router-dom";
-import { Settings, User, House, LogIn, User2Icon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { User, House, LogIn, User2Icon, LogOut, Users, Mail } from "lucide-react";
 import { useAuthstore } from "../store/useAuth.store";
 
 export default function Navbar() {
-  const { authUser } = useAuthstore()
+	const navigate = useNavigate();
+	const { authUser, logout } = useAuthstore();
 	return (
-		<header className="sticky flex  text-gray-300  justify-between top-0 z-50 w-full bg-gray-900/80 backdrop-blur">
+		<header className="flex text-gray-300  justify-between top-0 w-full bg-gray-950 ">
 			<div className="container mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
 				<Link
 					href="/"
@@ -30,24 +31,38 @@ export default function Navbar() {
 							Profile
 						</Link>
 						<Link
-							to="/setting"
+							to="/explore"
 							className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground flex flex-col items-center">
-							<Settings className="size-5" />
-							Settings
+							<Users className="size-5" />
+							Explore
 						</Link>
 					</nav>
 				</div>
 				<div className="flex gap-3 text-sm font-medium text-muted-foreground items-center justify-center">
-					<Link
-						to="/login"
-						className="border hover:bg-green-500 hover:text-black border-green-700 flex gap-3 items-center px-3 py-2 rounded-lg">
-						<LogIn></LogIn> Sign In
-					</Link>
-					<Link
-						to="/register"
-						className="hover:bg-rose-700 border  border-rose-900 flex gap-3 items-center px-3 py-2 rounded-lg">
-						<User2Icon></User2Icon> Sign Up
-					</Link>
+					{authUser ? (
+						<button
+							className="bg-red-500 px-3 py-2  hover:bg-rose-900 rounded-lg flex items-center gap-3 font-bold"
+							onClick={() => {
+								
+								logout();
+								navigate("/");
+							}}>
+							<LogOut></LogOut> logout
+						</button>
+					) : (
+						<>
+							<Link
+								to="/login"
+								className="border hover:bg-green-500 hover:text-black border-green-700 flex gap-3 items-center px-3 py-2 rounded-lg">
+								<LogIn></LogIn> Sign In
+							</Link>
+							<Link
+								to="/register"
+								className="hover:bg-rose-700 border  border-rose-900 flex gap-3 items-center px-3 py-2 rounded-lg">
+								<User2Icon></User2Icon> Sign Up
+							</Link>
+						</>
+					)}
 				</div>
 			</div>
 		</header>

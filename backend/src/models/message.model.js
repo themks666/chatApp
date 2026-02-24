@@ -6,13 +6,12 @@ const messageSchema = mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 		},
-		reciverId: {
+		receiverId: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 		},
 		text: {
-			type: String,
-			required: true,
+			type: String
 		},
 		image: {
 			type: String,

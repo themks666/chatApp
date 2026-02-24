@@ -97,7 +97,7 @@ export const login = async (req, res) => {
 	}
 };
 
-export const logout = async (req, res) => {
+export const logout = async (_, res) => {
 	try {
 		res.cookie("token", "", { maxAge: 0 });
 		res.status(200).json({ message: "Logged out user successfully" });
@@ -112,10 +112,14 @@ export const updateProfile = async (req, res) => {
 		const { profilePic } = req.body;
 		const userId = req.user._id;
 		if (!profilePic) {
-			res.status(404).json({ message: "Profile picture must be provided" });
+			console.log("no image found");
+			return res
+				.status(404)
+				.json({ message: "Profile picture must be provided" });
 		}
+
 		const uploadResponse = await cloudinary.uploader.upload(profilePic);
-		console.log(uploadResponse);
+		console.log("this is response : \n", uploadResponse);
 		const updateUser = await UserModel.findByIdAndUpdate(
 			userId,
 			{
@@ -123,20 +127,47 @@ export const updateProfile = async (req, res) => {
 			},
 			{ new: true },
 		);
-		res.status(200).json({ message: "Logged out user successfully" });
-	} catch (error) { 
+		res
+			.status(200)
+			.json({ message: "Profile has been updated", user: updateUser });
+	} catch (error) {
 		console.log("error in login: ", error);
 		res.status(500).json({ success: false, message: "internal Server error" });
 	}
 };
 
-export const verifyUser =  (req, res)=> {
+export const verifyUser = (req, res) => {
 	try {
-		console.log(req.user);
-		res.status(200).json({ message: "verified", user: req.user })
+		
+		res.status(200).json({ message: "verified", user: req.user });
 	} catch (error) {
 		console.log("error in verify User: ", error);
 		res.status(500).json({ success: false, message: "internal Server error" });
-		
 	}
-}
+};
+
+export const getAllUsers = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const allUsers = await UserModel.find({ _id: { $ne: userId } }).select(
+			"-password",
+		);
+		res.status(200).json({ message: "All User", users: allUsers });
+	} catch (error) {
+		console.log("error in fetching All User: ", error);
+		res.status(500).json({ success: false, message: "internal Server error" });
+	}
+};
+
+export const getSingleUsers = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const singleUsers = await UserModel.findOne({ _id:id }).select(
+			"-password",
+		);
+		res.status(200).json({ message: "single User", user: singleUsers });
+	} catch (error) {
+		console.log("error in fetching All User: ", error);
+		res.status(500).json({ success: false, message: "internal Server error" });
+	}
+};

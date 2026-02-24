@@ -12,6 +12,7 @@ export const protectedRoute = async (req, res, next) => {
 			return (res.status(401), json({ message: "Unauthorized" }));
 		}
 		const decodedUser = await UserModel.findById(decoded.userID, { password: 0 });
+		
 		if (!decodedUser) {
 			return res.status(404).json({ message: "Unauthorized" });
 		}
